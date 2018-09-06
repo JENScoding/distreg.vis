@@ -54,7 +54,9 @@ plot_dist <- function(model, pred_params, palette = "default",
     stop("Family not implemented")
 
   # Get correct pdf and cdf functions - pdf_cdf_getter should also check whether a cdf is even available
-  funs_list <- pdf_cdf_getter(model)
+  if (is.continuous(fam_name))
+    funs_list <- list(pdf = fam_fun_getter(fam_name, "d"),
+                      cdf = fam_fun_getter(fam_name, "p"))
 
   # Get correct limits
   lims <- limits(fam_name, pred_params)
@@ -65,7 +67,7 @@ plot_dist <- function(model, pred_params, palette = "default",
   else if (is.continuous(fam_name))
     plot <- pdfcdf_continuous(lims, funs_list, type, pred_params, palette)
   else if (!is.continuous(fam_name))
-    plot <- pdfcdf_discrete(pred_params, palette, fam_name, type, model)
+    plot <- pdfcdf_discrete(pred_params, palette, fam_name, type, model, lims)
 
   # Return it
   return(plot)
@@ -81,12 +83,12 @@ plot_dist <- function(model, pred_params, palette = "default",
 pdfcdf_continuous <- function(lims, funs, type, p_m, palette) {
   if (type == "cdf") {
     # Assemble plot
-    ground <- ggplot(data = data.frame(y = c(0, 1), x = lims), aes(x, y)) +
+    ground <- ggplot(data = data.frame(y = c(0, 1), x = lims), aes_("x", "y")) +
       ggtitle("Predicted distribution(s)") +
       labs(x = "y", y = "F(y)")
 
     # Add functions
-    for (i in 1:nrow(p_m)) {
+    for (i in seq_len(nrow(p_m))) {
       args <- p_m[i, , drop = FALSE]
       ground <- ground +
         stat_function(fun = funs$cdf, args = list(par = as.list(args)),
@@ -99,7 +101,7 @@ pdfcdf_continuous <- function(lims, funs, type, p_m, palette) {
       labs(x = "y", y = "f(y)")
 
     # Add functions
-    for (i in 1:nrow(p_m)) {
+    for (i in seq_len(nrow(p_m))) {
       args <- p_m[i, , drop = FALSE]
       ground <- ground +
         stat_function(fun = funs$pdf, args = list(par = as.list(args)),
@@ -140,14 +142,14 @@ pdfcdf_continuous <- function(lims, funs, type, p_m, palette) {
 #' @importFrom viridis scale_fill_viridis scale_colour_viridis
 #' @keywords internal
 
-pdfcdf_discrete <- function(p_m, palette, family, type, model) {
+pdfcdf_discrete <- function(pred_params, palette, fam_name, type, model, lims) {
 
   # Transform discrete predictions
-  pred_df <- disc_trans(p_m, family, type, model)
+  pred_df <- disc_trans(pred_params, fam_name, type, model, lims)
 
   if (type == "pdf") {
     # Assemble plot
-    ground <- ggplot(pred_df, aes(type, y = value, fill = rownames)) +
+    ground <- ggplot(pred_df, aes_("xvals", y = "value", fill = "rownames")) +
       geom_bar(stat = "identity", position = position_dodge()) +
       labs(x = "y", y = "f(y)") +
       ggtitle("Predicted distributions(s)")
@@ -171,7 +173,7 @@ pdfcdf_discrete <- function(p_m, palette, family, type, model) {
 
   } else if (type == "cdf") {
     # Assemble plot
-    ground <- ggplot(pred_df, aes(type, value, col = rownames)) +
+    ground <- ggplot(pred_df, aes("xvals", "value", col = "rownames")) +
       geom_step(linetype = 2) +
       labs(x = "x", y = "F(x)") +
       ggtitle("Predicted distribution(s)")
@@ -251,7 +253,7 @@ pdfcdf_2d <- function(p_m, model, type = "pdf", display = "perspective",
       set_colnames(c("x", "y"))
     comb_vals$z <- apply(comb_vals, 1, function(x)
       return(density_f(matrix(x, ncol = 2), par = p)))
-    plot <- ggplot(comb_vals, aes(x, y, fill = z)) +
+    plot <- ggplot(comb_vals, aes_("x", "y", fill = "z")) +
       geom_tile() +
       ggtitle("Predicted distribution") +
       theme_classic() +
