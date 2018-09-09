@@ -48,31 +48,36 @@ dists %>%
   filter(moment_funs) %>%
   dplyr::select(dist_name, class)
 #>      dist_name  class
-#> 1       exGAUS gamlss
-#> 2           GU gamlss
-#> 3           LO gamlss
-#> 4        LOGNO gamlss
-#> 5           NO gamlss
-#> 6          NO2 gamlss
-#> 7          NOF gamlss
-#> 8           PE gamlss
-#> 9          PE2 gamlss
-#> 10          PO gamlss
-#> 11          RG gamlss
-#> 12         SN1 gamlss
-#> 13         SN2 gamlss
-#> 14          TF gamlss
-#> 15         TF2 gamlss
-#> 16        beta bamlss
-#> 17    binomial bamlss
-#> 18       cnorm bamlss
-#> 19       gamma bamlss
-#> 20    gaussian bamlss
-#> 21   gaussian2 bamlss
-#> 22      glogis bamlss
-#> 23     gpareto bamlss
-#> 24 multinomial bamlss
-#> 25     poisson bamlss
+#> 1         EGB2 gamlss
+#> 2       exGAUS gamlss
+#> 3           GT gamlss
+#> 4           GU gamlss
+#> 5          JSU gamlss
+#> 6         JSUo gamlss
+#> 7           LO gamlss
+#> 8        LOGNO gamlss
+#> 9           NO gamlss
+#> 10         NO2 gamlss
+#> 11         NOF gamlss
+#> 12          PE gamlss
+#> 13         PE2 gamlss
+#> 14          PO gamlss
+#> 15          RG gamlss
+#> 16         SN1 gamlss
+#> 17         SN2 gamlss
+#> 18         SST gamlss
+#> 19          TF gamlss
+#> 20         TF2 gamlss
+#> 21        beta bamlss
+#> 22    binomial bamlss
+#> 23       cnorm bamlss
+#> 24       gamma bamlss
+#> 25    gaussian bamlss
+#> 26   gaussian2 bamlss
+#> 27      glogis bamlss
+#> 28     gpareto bamlss
+#> 29 multinomial bamlss
+#> 30     poisson bamlss
 ```
 
 The rest of the distributions are mostly supported, but only in
